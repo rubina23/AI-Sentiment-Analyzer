@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
-from transformers import pipeline
+from transformers import pipeline, AutoTokenizer, AutoModelForSeq2SeqLM
 from wordcloud import WordCloud
 import matplotlib.pyplot as plt
 from youtube_comment_downloader import *
@@ -27,9 +27,11 @@ def load_emotion_model():
 
 @st.cache_resource
 def load_reply_model():
-    # টাস্কের নাম মুছে দিয়েছি, Hugging Face এখন মডেল দেখে নিজে থেকেই টাস্ক বুঝে নেবে
-    return pipeline(model="google/flan-t5-small")
-    
+    # Pipeline-এর বদলে ম্যানুয়ালি মডেল এবং টোকেনাইজার লোড করা (Bulletproof Method)
+    tokenizer = AutoTokenizer.from_pretrained("google/flan-t5-small")
+    model = AutoModelForSeq2SeqLM.from_pretrained("google/flan-t5-small")
+    return tokenizer, model
+
 # ৪টি ট্যাব তৈরি করা
 tab1, tab2, tab3, tab4 = st.tabs(["💬 Single Text", "📂 Bulk CSV", "🤖 Auto-Reply Generator", "▶️ Live YouTube Analysis"])
 
@@ -99,7 +101,7 @@ with tab2:
                     st.pyplot(fig_wc)
 
 # ==========================================
-# TAB 3: Auto-Reply Generator
+# TAB 3: Auto-Reply Generator (Fixed & Optimized)
 # ==========================================
 with tab3:
     st.subheader("Generate Professional AI Replies")
@@ -110,12 +112,13 @@ with tab3:
     if st.button("Generate Reply"):
         if review_input.strip() != "":
             with st.spinner("Drafting response..."):
-                reply_model = load_reply_model()
-                # AI কে প্রম্পট বা নির্দেশ দেওয়া হচ্ছে
-                prompt = f"Write a professional and polite customer service reply to this review: '{review_input}'"
+                tokenizer, reply_model = load_reply_model()
+                prompt = f"Write a professional customer service reply to this review: '{review_input}'"
                 
-                # ম্যাক্সিমাম লেন্থ একটু বাড়িয়ে দেওয়া হয়েছে সুন্দর উত্তরের জন্য
-                generated_text = reply_model(prompt, max_length=100, do_sample=True)[0]['generated_text']
+                # ম্যানুয়াল জেনারেশন প্রসেস
+                inputs = tokenizer(prompt, return_tensors="pt")
+                outputs = reply_model.generate(**inputs, max_length=150)
+                generated_text = tokenizer.decode(outputs[0], skip_special_tokens=True)
                 
                 st.write("### ✍️ AI Suggested Reply:")
                 st.success(generated_text)
@@ -134,7 +137,6 @@ with tab4:
             with st.spinner("Downloading comments from YouTube... This may take a few seconds."):
                 try:
                     downloader = YoutubeCommentDownloader()
-                    # ইউটিউব থেকে প্রথম 50 টি কমেন্ট টেনে আনা হচ্ছে
                     comments_generator = downloader.get_comments_from_url(yt_url, sort_by=SORT_BY_POPULAR)
                     comments_list = list(itertools.islice(comments_generator, 50))
                     
@@ -150,7 +152,6 @@ with tab4:
                         
                         st.success(f"✅ Successfully analyzed {len(df_yt)} comments!")
                         
-                        # ইউটিউব ড্যাশবোর্ড
                         col1, col2 = st.columns(2)
                         with col1:
                             sentiment_counts = df_yt['Sentiment'].value_counts().reset_index()
@@ -163,7 +164,6 @@ with tab4:
                             st.write("### 📄 Latest Comments Data")
                             st.dataframe(df_yt)
                             
-                        # Download YouTube Data
                         csv_yt = df_yt.to_csv(index=False).encode('utf-8')
                         st.download_button("📥 Download YouTube Comments", data=csv_yt, file_name="YouTube_Analysis.csv", mime="text/csv")
                         
