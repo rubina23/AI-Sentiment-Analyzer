@@ -27,9 +27,9 @@ def load_emotion_model():
 
 @st.cache_resource
 def load_reply_model():
-    # অটো-রিপ্লাইয়ের জন্য গুগলের টেক্সট জেনারেশন মডেল
-    return pipeline("text2text-generation", model="google/flan-t5-small")
-
+    # টাস্কের নাম মুছে দিয়েছি, Hugging Face এখন মডেল দেখে নিজে থেকেই টাস্ক বুঝে নেবে
+    return pipeline(model="google/flan-t5-small")
+    
 # ৪টি ট্যাব তৈরি করা
 tab1, tab2, tab3, tab4 = st.tabs(["💬 Single Text", "📂 Bulk CSV", "🤖 Auto-Reply Generator", "▶️ Live YouTube Analysis"])
 
