@@ -3,3 +3,5 @@ transformers
 torch
 pandas
 plotly
+wordcloud
+matplotlib
