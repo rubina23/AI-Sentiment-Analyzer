@@ -113,15 +113,23 @@ with tab3:
         if review_input.strip() != "":
             with st.spinner("Drafting response..."):
                 tokenizer, reply_model = load_reply_model()
-                prompt = f"Write a professional customer service reply to this review: '{review_input}'"
+                prompt = f"Write a polite and helpful customer service reply to this review: '{review_input}'"
                 
-                # ম্যানুয়াল জেনারেশন প্রসেস
+                # ম্যানুয়াল জেনারেশন প্রসেস (আপডেটেড)
                 inputs = tokenizer(prompt, return_tensors="pt")
-                outputs = reply_model.generate(**inputs, max_length=150)
+                outputs = reply_model.generate(
+                    **inputs, 
+                    max_length=150,
+                    no_repeat_ngram_size=2,  # একই কথা যেন ২ বার না বলে
+                    repetition_penalty=2.0,  # রিপিট করলে মডেলকে বাধা দেওয়া হবে
+                    do_sample=True,          # রোবটের মতো না বলে মানুষের মতো ক্রিয়েটিভ উত্তর দেবে
+                    temperature=0.7          # ন্যাচারাল টোন ঠিক রাখবে
+                )
                 generated_text = tokenizer.decode(outputs[0], skip_special_tokens=True)
                 
-                st.write("### ✍️ AI Suggested Reply:")
+                st.write("### ✍️ Reply:")
                 st.success(generated_text)
+
 
 # ==========================================
 # TAB 4: Live YouTube Analysis
