@@ -101,7 +101,7 @@ with tab2:
                     st.pyplot(fig_wc)
 
 # ==========================================
-# TAB 3: Auto-Reply Generator (Fixed & Optimized)
+# TAB 3: Auto-Reply Generator (Upgraded to GPT-2)
 # ==========================================
 with tab3:
     st.subheader("Generate Professional AI Replies")
@@ -111,25 +111,31 @@ with tab3:
     
     if st.button("Generate Reply"):
         if review_input.strip() != "":
-            with st.spinner("Drafting response..."):
-                tokenizer, reply_model = load_reply_model()
-                prompt = f"Write a polite and helpful customer service reply to this review: '{review_input}'"
+            with st.spinner("Drafting response using GPT-2 architecture..."):
+                # GPT-2 মডেল লোড করা (সরাসরি পাইপলাইন দিয়ে, যা অনেক ফাস্ট)
+                reply_generator = pipeline("text-generation", model="distilgpt2")
                 
-                # ম্যানুয়াল জেনারেশন প্রসেস (আপডেটেড)
-                inputs = tokenizer(prompt, return_tensors="pt")
-                outputs = reply_model.generate(
-                    **inputs, 
-                    max_length=150,
-                    no_repeat_ngram_size=2,  # একই কথা যেন ২ বার না বলে
-                    repetition_penalty=2.0,  # রিপিট করলে মডেলকে বাধা দেওয়া হবে
-                    do_sample=True,          # রোবটের মতো না বলে মানুষের মতো ক্রিয়েটিভ উত্তর দেবে
-                    temperature=0.7          # ন্যাচারাল টোন ঠিক রাখবে
+                # প্রম্পটটি এমনভাবে লেখা হয়েছে যেন মডেল বুঝতে পারে এটি একটি কাস্টমার সার্ভিস ইমেইল
+                prompt = f"Customer: {review_input}\nCustomer Service Agent: Dear Customer, we sincerely apologize for the inconvenience. "
+                
+                # জেনারেশন প্রসেস
+                outputs = reply_generator(
+                    prompt, 
+                    max_length=80, 
+                    num_return_sequences=1,
+                    no_repeat_ngram_size=2,
+                    repetition_penalty=1.5,
+                    temperature=0.6,
+                    do_sample=True,
+                    truncation=True
                 )
-                generated_text = tokenizer.decode(outputs[0], skip_special_tokens=True)
                 
-                st.write("### ✍️ Reply:")
-                st.success(generated_text)
-
+                # শুধু কাস্টমার সার্ভিসের রিপ্লাইটুকু আলাদা করা
+                generated_text = outputs[0]['generated_text']
+                reply_only = generated_text.split("Customer Service Agent:")[1].strip()
+                
+                st.write("### ✍️ Suggested Reply:")
+                st.success(reply_only)
 
 # ==========================================
 # TAB 4: Live YouTube Analysis
