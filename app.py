@@ -1,7 +1,7 @@
 import streamlit as st
 from transformers import pipeline
 
-# ওয়েবসাইটের মূল সেটিং
+# settings
 st.set_page_config(page_title="AI Sentiment Analyzer", page_icon="💬", layout="centered")
 
 st.title("💬 AI Customer Sentiment Analyzer")
@@ -9,31 +9,31 @@ st.write("Write any review, feedback, or sentence below, and the AI will analyze
 
 st.write("---")
 
-# ম্যাজিক: মডেল লোড করা (Cache ব্যবহার করা হয়েছে যাতে ফাস্ট কাজ করে)
+# Load model (use Cache for faster)
 @st.cache_resource
 def load_model():
-    # Hugging Face থেকে ডিফল্ট সেন্টিমেন্ট অ্যানালাইসিস মডেল লোড হবে
+    # Load default sentiment analysis model from Hugging Face
     return pipeline("sentiment-analysis")
 
 analyzer = load_model()
 
-# ইউজারের ইনপুট নেওয়ার জায়গা
+# user input
 user_input = st.text_area("Enter your text here:", "I absolutely love this product! The quality is amazing and the delivery was incredibly fast.")
 
-# বাটন এবং প্রেডিকশন
+# button and prediction
 if st.button("Analyze Sentiment"):
     if user_input.strip() == "":
         st.warning("Please enter some text to analyze.")
     else:
         with st.spinner("AI is analyzing the text... Please wait..."):
-            # মডেল প্রেডিকশন করছে
+            # model is predicting
             result = analyzer(user_input)[0]
             sentiment = result['label']
             confidence = result['score'] * 100
 
             st.write("### 📊 Analysis Result:")
             
-            # রেজাল্ট অনুযায়ী রঙ এবং মেসেজ দেখানো
+            # shoe message and color according to result
             if sentiment == 'POSITIVE':
                 st.success(f"🌟 **Sentiment:** {sentiment} \n\n🎯 **Confidence Score:** {confidence:.2f}%")
             elif sentiment == 'NEGATIVE':
