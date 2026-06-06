@@ -3,18 +3,18 @@ import pandas as pd
 import plotly.express as px
 from transformers import pipeline
 
-# ওয়েবসাইটের মূল সেটিং (wide layout দিলে ড্যাশবোর্ড সুন্দর দেখাবে)
-st.set_page_config(page_title="Advanced AI Sentiment Analyzer", page_icon="🧠", layout="wide")
+# settings
+st.set_page_config(page_title="Advanced AI Sentiment Analyzer", page_icon="🧠", layout="centered")
 
 st.title("🧠 Advanced AI Sentiment & Emotion Analyzer")
 st.write("Analyze customer sentiments in multiple languages (English, Bengali, etc.), detect specific emotions, and process bulk reviews via CSV!")
 
 st.write("---")
 
-# ম্যাজিক: একসাথে দুটি মডেল লোড করা (Cache ব্যবহার করা হয়েছে)
+# Load two model using Cache
 @st.cache_resource
 def load_models():
-    # মাল্টিলিঙ্গুয়াল সেন্টিমেন্ট মডেল (বাংলা, ইংরেজি সব বুঝবে)
+    # multitingual sentiment model (bangla, English,...)
     sentiment_model = pipeline("text-classification", model="lxyuan/distilbert-base-multilingual-cased-sentiments-student")
     # ইমোশন বা আবেগ বোঝার মডেল
     emotion_model = pipeline("text-classification", model="j-hartmann/emotion-english-distilroberta-base")
