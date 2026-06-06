@@ -16,19 +16,19 @@ st.write("---")
 def load_models():
     # multitingual sentiment model (bangla, English,...)
     sentiment_model = pipeline("text-classification", model="lxyuan/distilbert-base-multilingual-cased-sentiments-student")
-    # ইমোশন বা আবেগ বোঝার মডেল
+    # emotion model
     emotion_model = pipeline("text-classification", model="j-hartmann/emotion-english-distilroberta-base")
     return sentiment_model, emotion_model
 
-# মডেল লোড হচ্ছে
+# load model
 with st.spinner("Loading AI Models... This might take a few seconds on the first run."):
     sentiment_analyzer, emotion_analyzer = load_models()
 
-# অ্যাপটিকে দুটি ট্যাবে (Tab) ভাগ করা হলো
+# separate in 2 tabs
 tab1, tab2 = st.tabs(["✍️ Single Text Analysis", "📁 Bulk CSV Analysis (Dashboard)"])
 
 # -------------------------------------------------------------------------
-# ট্যাব ১: সিঙ্গেল টেক্সট অ্যানালাইসিস (Multilingual + Emotion)
+# Tab 1: Single text analysis (Multilingual + Emotion)
 # -------------------------------------------------------------------------
 with tab1:
     st.header("Analyze a Single Review")
@@ -40,11 +40,11 @@ with tab1:
             st.warning("Please enter some text to analyze.")
         else:
             with st.spinner("AI is thinking..."):
-                # প্রেডিকশন
+                # prediction
                 sentiment_result = sentiment_analyzer(user_input)[0]
                 emotion_result = emotion_analyzer(user_input)[0]
                 
-                # রেজাল্ট সুন্দর করে দেখানোর জন্য দুটি কলাম
+                # result
                 col1, col2 = st.columns(2)
                 
                 with col1:
@@ -65,7 +65,7 @@ with tab1:
                     st.info(f"**Emotion:** {emotion} 🧐 \n\n**Confidence:** {conf_e:.1f}%")
 
 # -------------------------------------------------------------------------
-# ট্যাব ২: ড্যাশবোর্ড এবং CSV আপলোড
+# Tab 2: Upload Dashboard & CSV 
 # -------------------------------------------------------------------------
 with tab2:
     st.header("Bulk Review Analysis Dashboard")
@@ -74,31 +74,31 @@ with tab2:
     uploaded_file = st.file_uploader("Upload your CSV file", type=["csv"])
     
     if uploaded_file is not None:
-        # ডেটাবেস পড়া
+        # read DB
         df = pd.read_csv(uploaded_file)
         
-        # ইউজারকে কলাম সিলেক্ট করতে বলা (যাতে যেকোনো এক্সেল ফাইল কাজ করে)
+        # select column by user (work any excel file)
         text_column = st.selectbox("Select the column containing the text/reviews:", df.columns)
         
         if st.button("Generate Dashboard"):
             with st.spinner("AI is analyzing all reviews... Please wait."):
                 
-                # শুধু প্রথম ১০০টি রিভিউ নিচ্ছি (যাতে ফ্রি সার্ভার ক্র্যাশ না করে)
+                # First 100 reviews (যাতে ফ্রি সার্ভার ক্র্যাশ না করে)
                 texts = df[text_column].dropna().astype(str).tolist()[:100] 
                 
-                # সব রিভিউ অ্যানালাইসিস করা
+                # Analysis all review
                 results = sentiment_analyzer(texts)
                 sentiments = [res['label'] for res in results]
                 
-                # নতুন কলাম যুক্ত করা
+                # add new col
                 df_result = pd.DataFrame({"Review": texts, "Sentiment": sentiments})
                 
-                # ড্যাশবোর্ড কলাম
+                # ড্যাDashboard column
                 colA, colB = st.columns([1, 1])
                 
                 with colA:
                     st.subheader("📊 Sentiment Distribution")
-                    # Plotly দিয়ে পাই চার্ট (Pie Chart) তৈরি
+                    # Create Pie chart using Plotly
                     sentiment_counts = df_result['Sentiment'].value_counts().reset_index()
                     sentiment_counts.columns = ['Sentiment', 'Count']
                     fig = px.pie(sentiment_counts, values='Count', names='Sentiment', 
