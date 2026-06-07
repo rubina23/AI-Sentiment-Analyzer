@@ -134,9 +134,8 @@ with tab3:
                 else:
                     ai_reply = "Dear Customer, thank you for sharing your feedback with us. We constantly strive to improve and your insights help us do exactly that!"
                 
-                st.write("### ✍️ AI Suggested Reply:")
+                st.write("### ✍️ Suggested Reply:")
                 st.success(ai_reply)
-                st.caption(f"🧠 **AI Logic Engine:** The model correctly detected a **{sentiment_label}** sentiment and triggered the appropriate response.")
 
 # ==========================================
 # TAB 4: Live YouTube Analysis
