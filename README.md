@@ -6,7 +6,7 @@
 
 This is an AI-powered Natural Language Processing (NLP) dashboard built with **Streamlit** and **Hugging Face**. This tool helps businesses analyze customer feedback, detect emotions, generate context-aware automated replies, and scrape live YouTube comments for real-time market sentiment analysis.
 
-🔗 **Live Demo:** [https://ai-sentiment-analyzer-3q.streamlit.app/]
+🔗 **Live Demo:** https://ai-sentiment-analyzer-3q.streamlit.app/
 
 ---
 
