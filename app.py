@@ -19,7 +19,8 @@ st.write("---")
 # ==========================================
 @st.cache_resource
 def load_sentiment_model():
-    return pipeline("text-classification", model="lxyuan/distilbert-base-multilingual-cased-sentiments-student")
+    # সোশ্যাল মিডিয়া এবং ইমোজির জন্য স্পেশাল মডেল
+    return pipeline("text-classification", model="cardiffnlp/twitter-xlm-roberta-base-sentiment", max_length=512, truncation=True)
 
 @st.cache_resource
 def load_emotion_model():
@@ -27,10 +28,17 @@ def load_emotion_model():
 
 @st.cache_resource
 def load_reply_model():
-    # Pipeline-এর বদলে ম্যানুয়ালি মডেল এবং টোকেনাইজার লোড করা (Bulletproof Method)
-    tokenizer = AutoTokenizer.from_pretrained("google/flan-t5-small")
-    model = AutoModelForSeq2SeqLM.from_pretrained("google/flan-t5-small")
-    return tokenizer, model
+    return pipeline("text-generation", model="distilgpt2")
+
+# লেবেল ম্যাপ করার জন্য হেল্পার ফাংশন
+def map_sentiment_label(label):
+    if label == 'LABEL_0':
+        return 'NEGATIVE'
+    elif label == 'LABEL_1':
+        return 'NEUTRAL'
+    elif label == 'LABEL_2':
+        return 'POSITIVE'
+    return label.upper()
 
 # ৪টি ট্যাব তৈরি করা
 tab1, tab2, tab3, tab4 = st.tabs(["💬 Single Text", "📂 Bulk CSV", "🤖 Auto-Reply Generator", "▶️ Live YouTube Analysis"])
@@ -49,7 +57,14 @@ with tab1:
                 if "Sentiment" in analysis_type:
                     analyzer = load_sentiment_model()
                     result = analyzer(user_input)[0]
-                    st.success(f"**Sentiment:** {result['label'].upper()} (Confidence: {result['score'] * 100:.2f}%)")
+                    mapped_label = map_sentiment_label(result['label'])
+                    
+                    if mapped_label == 'POSITIVE':
+                        st.success(f"**Sentiment:** {mapped_label} (Confidence: {result['score'] * 100:.2f}%)")
+                    elif mapped_label == 'NEGATIVE':
+                        st.error(f"**Sentiment:** {mapped_label} (Confidence: {result['score'] * 100:.2f}%)")
+                    else:
+                        st.info(f"**Sentiment:** {mapped_label} (Confidence: {result['score'] * 100:.2f}%)")
                 else:
                     emotion_analyzer = load_emotion_model()
                     result = emotion_analyzer(user_input)[0]
@@ -71,16 +86,11 @@ with tab2:
                 analyzer = load_sentiment_model()
                 data_to_analyze = df[text_column].dropna().astype(str).head(100).tolist()
                 results = analyzer(data_to_analyze)
-                sentiments = [res['label'] for res in results]
+                sentiments = [map_sentiment_label(res['label']) for res in results]
                 
                 df_result = pd.DataFrame({"Review": data_to_analyze, "Sentiment": sentiments})
                 st.success("✅ Analysis Complete!")
                 st.dataframe(df_result.head(10))
-                
-                # Download Button
-                csv_data = df_result.to_csv(index=False).encode('utf-8')
-                st.download_button("📥 Download Analyzed Data", data=csv_data, file_name="CSV_Report.csv", mime="text/csv")
-                st.write("---")
                 
                 # Charts
                 col1, col2 = st.columns(2)
@@ -88,7 +98,7 @@ with tab2:
                     sentiment_counts = df_result['Sentiment'].value_counts().reset_index()
                     sentiment_counts.columns = ['Sentiment', 'Count']
                     fig = px.pie(sentiment_counts, values='Count', names='Sentiment', title="Sentiment Distribution",
-                                 color='Sentiment', color_discrete_map={'positive':'#2ecc71', 'negative':'#e74c3c', 'neutral':'#95a5a6'})
+                                 color='Sentiment', color_discrete_map={'POSITIVE':'#2ecc71', 'NEGATIVE':'#e74c3c', 'NEUTRAL':'#95a5a6'})
                     st.plotly_chart(fig, use_container_width=True)
                 
                 with col2:
@@ -113,25 +123,20 @@ with tab3:
         if review_input.strip() != "":
             with st.spinner("Analyzing sentiment and drafting response..."):
                 
-                # ১. প্রথমে এআই দিয়ে মেসেজের সেন্টিমেন্ট বা আবেগ চেক করা হচ্ছে
                 sentiment_analyzer = load_sentiment_model()
                 sentiment_result = sentiment_analyzer(review_input)[0]
-                sentiment_label = sentiment_result['label'].upper()
+                sentiment_label = map_sentiment_label(sentiment_result['label'])
                 
-                # ২. সেন্টিমেন্ট অনুযায়ী স্মার্ট রিপ্লাই তৈরি করা
                 if sentiment_label == 'POSITIVE':
-                    ai_reply = "Dear Customer, thank you so much for your kind words! We are absolutely thrilled to hear that you had a great experience with our product. We look forward to serving you again in the future."
+                    ai_reply = "Dear Customer, thank you so much for your kind words! We are absolutely thrilled to hear that you had a great experience. We look forward to serving you again."
                 elif sentiment_label == 'NEGATIVE':
-                    ai_reply = "Dear Customer, we sincerely apologize for the inconvenience you have faced. We take your feedback very seriously and would like to resolve this issue immediately. Please reach out to our support team so we can make things right."
+                    ai_reply = "Dear Customer, we sincerely apologize for the inconvenience. We take your feedback very seriously and would like to resolve this issue immediately. Please reach out to our support team."
                 else:
-                    ai_reply = "Dear Customer, thank you for sharing your valuable feedback with us. We constantly strive to improve our products and your insights help us do exactly that!"
+                    ai_reply = "Dear Customer, thank you for sharing your feedback with us. We constantly strive to improve and your insights help us do exactly that!"
                 
                 st.write("### ✍️ AI Suggested Reply:")
                 st.success(ai_reply)
-                
-                # ৩. ইন্টারভিউয়ারদের দেখানোর জন্য এআই এর পেছনের লজিক প্রিন্ট করা
-                st.caption(f"🧠 **AI Logic Engine:** The model correctly detected a **{sentiment_label}** sentiment and triggered the appropriate response framework to ensure professional safety.")
-                
+                st.caption(f"🧠 **AI Logic Engine:** The model correctly detected a **{sentiment_label}** sentiment and triggered the appropriate response.")
 
 # ==========================================
 # TAB 4: Live YouTube Analysis
@@ -144,7 +149,7 @@ with tab4:
     
     if st.button("Scrape & Analyze Comments"):
         if yt_url != "":
-            with st.spinner("Downloading comments from YouTube... This may take a few seconds."):
+            with st.spinner("Downloading and analyzing comments..."):
                 try:
                     downloader = YoutubeCommentDownloader()
                     comments_generator = downloader.get_comments_from_url(yt_url, sort_by=SORT_BY_POPULAR)
@@ -153,13 +158,11 @@ with tab4:
                     if len(comments_list) > 0:
                         comment_texts = [comment['text'] for comment in comments_list]
                         
-                        st.write("Analyzing Sentiments...")
                         analyzer = load_sentiment_model()
                         results = analyzer(comment_texts)
-                        sentiments = [res['label'] for res in results]
+                        sentiments = [map_sentiment_label(res['label']) for res in results]
                         
                         df_yt = pd.DataFrame({"Comment": comment_texts, "Sentiment": sentiments})
-                        
                         st.success(f"✅ Successfully analyzed {len(df_yt)} comments!")
                         
                         col1, col2 = st.columns(2)
@@ -167,7 +170,7 @@ with tab4:
                             sentiment_counts = df_yt['Sentiment'].value_counts().reset_index()
                             sentiment_counts.columns = ['Sentiment', 'Count']
                             fig = px.pie(sentiment_counts, values='Count', names='Sentiment', title="YouTube Sentiment Overview",
-                                         color='Sentiment', color_discrete_map={'positive':'#2ecc71', 'negative':'#e74c3c', 'neutral':'#95a5a6'})
+                                         color='Sentiment', color_discrete_map={'POSITIVE':'#2ecc71', 'NEGATIVE':'#e74c3c', 'NEUTRAL':'#95a5a6'})
                             st.plotly_chart(fig, use_container_width=True)
                             
                         with col2:
@@ -178,7 +181,7 @@ with tab4:
                         st.download_button("📥 Download YouTube Comments", data=csv_yt, file_name="YouTube_Analysis.csv", mime="text/csv")
                         
                     else:
-                        st.warning("No comments found or comments are disabled for this video.")
+                        st.warning("No comments found.")
                         
                 except Exception as e:
                     st.error("Could not fetch comments. Please ensure the URL is correct and the video is public.")
