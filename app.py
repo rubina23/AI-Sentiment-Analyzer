@@ -187,6 +187,6 @@ with tab4:
                     st.error("Could not fetch comments. Please ensure the URL is correct and the video is public.")
 
 st.write("---")
-st.caption("Developed by Rubina Begum | Powered by Advanced NLP & Streamlit")
-# st.caption("Powered by Hugging Face, YouTube Scraper & Streamlit | Ultimate NLP Pipeline Developed by [আপনার নাম] | Powered by Advanced NLP & Streamlit")
+st.caption("Developed by Rubina Begum | Powered by Advanced NLP, Hugging Face & Streamlit")
+
 
