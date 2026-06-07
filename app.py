@@ -142,8 +142,8 @@ with tab2:
 # TAB 3: Auto-Reply Generator
 # ==========================================
 with tab3:
-    st.subheader("Generate Professional AI Replies")
-    st.write("AI will first analyze the sentiment of the review and then generate a 100% safe, contextual response.")
+    st.subheader("Generate Professional Replies")
+    #st.write("AI will first analyze the sentiment of the review and then generate a 100% safe, contextual response.")
     
     review_input = st.text_area("Customer Review:", "অসাধারণ হইছে রেসেপি!")
     
@@ -161,7 +161,7 @@ with tab3:
                 else:
                     ai_reply = "Dear Customer, thank you for sharing your feedback with us. We constantly strive to improve and your insights help us do exactly that!"
                 
-                st.write("### ✍️ AI Suggested Reply:")
+                #st.write("### ✍️ AI Suggested Reply:")
                 st.success(ai_reply)
 
 # ==========================================
