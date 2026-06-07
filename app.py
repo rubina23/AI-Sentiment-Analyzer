@@ -114,8 +114,8 @@ with tab2:
 # TAB 3: Auto-Reply Generator (Enterprise Hybrid System)
 # ==========================================
 with tab3:
-    st.subheader("Generate Professional AI Replies")
-    st.write("AI will first analyze the sentiment of the review and then generate a 100% safe, contextual response.")
+    #st.subheader("Generate Professional AI Replies")
+    #st.write("AI will first analyze the sentiment of the review and then generate a 100% safe, contextual response.")
     
     review_input = st.text_area("Customer Review:", "nice")
     
