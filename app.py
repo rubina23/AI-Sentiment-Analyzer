@@ -201,7 +201,6 @@ with tab4:
                     st.error("Could not fetch comments. Please ensure the URL is correct and the video is public.")
 
 st.write("---")
-st.caption("🚀 Built with ❤️ using Streamlit & Hugging Face | AI Sentiment Analyzer")
-st.caption("Developed by Rubina Begum | Powered by Advanced NLP, Hugging Face & Streamlit")
+st.caption("Developed by Rubina Begum | Powered by Advanced NLP, Hugging Face & Streamlit | AI Sentiment Analyzer")
 
 
