@@ -8,7 +8,7 @@ from youtube_comment_downloader import *
 import itertools
 
 # ওয়েবসাইটের মূল সেটিং
-st.set_page_config(page_title="AI Sentiment Analyzer", page_icon="🧠", layout="centered")
+st.set_page_config(page_title="AI Sentiment Analyzer", page_icon="🧠", layout="wide")
 
 st.title("🧠 AI Sentiment Analyzer")
 st.write("Analyze Sentiments, Detect Emotions, Generate Auto-Replies, and Scrape Live YouTube Comments!")
