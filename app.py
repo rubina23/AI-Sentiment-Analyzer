@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 from youtube_comment_downloader import *
 import itertools
 
-# ওয়েবসাইটের মূল সেটিং এবং নাম
+# main settings
 st.set_page_config(page_title="AI Sentiment Analyzer", page_icon="🧠", layout="wide")
 
 st.title("🧠 AI Sentiment Analyzer")
@@ -15,7 +15,7 @@ st.write("Analyze Sentiments, Detect Emotions, Generate Auto-Replies, and Scrape
 st.write("---")
 
 # ==========================================
-# AI মডেল লোড করা 
+# Load model
 # ==========================================
 
 #
@@ -24,7 +24,7 @@ st.write("---")
    # return pipeline("text-classification", model="cardiffnlp/twitter-xlm-roberta-base-sentiment", max_length=512, truncation=True)
 
 # ==========================================
-# AI মডেল লোড করা (Memory Optimized)
+# Load model (Memory Optimized)
 # ==========================================
 @st.cache_resource
 def load_sentiment_model():
@@ -41,7 +41,7 @@ def load_reply_model():
     return pipeline("text-generation", model="distilgpt2")
 
 # ==========================================
-# হেল্পার ফাংশন এবং স্মার্ট লজিক (Hybrid Engine)
+# Helper Function & Smart Logic (Hybrid Engine)
 # ==========================================
 def map_sentiment_label(label):
     if label == 'LABEL_0': return 'NEGATIVE'
