@@ -10,7 +10,7 @@ import itertools
 # ওয়েবসাইটের মূল সেটিং
 st.set_page_config(page_title="Ultimate AI Analyzer", page_icon="🚀", layout="wide")
 
-st.title("🚀 Ultimate Customer Feedback & YouTube Analyzer")
+st.title("🚀 Customer Sentiment Analyzer")
 st.write("Analyze Sentiments, Detect Emotions, Generate Auto-Replies, and Scrape Live YouTube Comments!")
 st.write("---")
 
