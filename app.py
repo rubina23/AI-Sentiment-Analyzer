@@ -134,7 +134,7 @@ with tab3:
                 else:
                     ai_reply = "Dear Customer, thank you for sharing your feedback with us. We constantly strive to improve and your insights help us do exactly that!"
                 
-                st.write("### ✍️ Suggested Reply:")
+                #st.write("### ✍️ Suggested Reply:")
                 st.success(ai_reply)
 
 # ==========================================
