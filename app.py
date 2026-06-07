@@ -17,9 +17,20 @@ st.write("---")
 # ==========================================
 # AI মডেল লোড করা 
 # ==========================================
+
+#
+#@st.cache_resource
+#def load_sentiment_model():
+   # return pipeline("text-classification", model="cardiffnlp/twitter-xlm-roberta-base-sentiment", max_length=512, truncation=True)
+
+# ==========================================
+# AI মডেল লোড করা (Memory Optimized)
+# ==========================================
 @st.cache_resource
 def load_sentiment_model():
-    return pipeline("text-classification", model="cardiffnlp/twitter-xlm-roberta-base-sentiment", max_length=512, truncation=True)
+    # অনেক ছোট এবং ফাস্ট মডেল (Streamlit-এর 1GB RAM-এর জন্য পারফেক্ট)
+    return pipeline("text-classification", model="lxyuan/distilbert-base-multilingual-cased-sentiments-student", max_length=512, truncation=True)
+    
 
 @st.cache_resource
 def load_emotion_model():
