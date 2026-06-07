@@ -4,7 +4,7 @@
 ![Streamlit](https://img.shields.io/badge/Streamlit-App-FF4B4B.svg)
 ![HuggingFace](https://img.shields.io/badge/Hugging%20Face-Transformers-F9AB00.svg)
 
-An enterprise-grade Natural Language Processing (NLP) dashboard built with **Streamlit** and **Hugging Face**. This tool helps businesses analyze customer feedback, detect emotions, generate context-aware automated replies, and scrape live YouTube comments for real-time market sentiment analysis.
+This is an AI-powered Natural Language Processing (NLP) dashboard built with **Streamlit** and **Hugging Face**. This tool helps businesses analyze customer feedback, detect emotions, generate context-aware automated replies, and scrape live YouTube comments for real-time market sentiment analysis.
 
 🔗 **Live Demo:** [https://ai-sentiment-analyzer-3q.streamlit.app/]
 
