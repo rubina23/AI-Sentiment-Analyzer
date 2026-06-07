@@ -72,7 +72,7 @@ with tab1:
 
     if st.button("Analyze Text"):
         if user_input.strip() != "":
-            with st.spinner("AI is thinking..."):
+            with st.spinner("Model is thinking..."):
                 if "Sentiment" in analysis_type:
                     # আমাদের নতুন স্মার্ট ইঞ্জিন ব্যবহার করা হচ্ছে
                     mapped_label, confidence = get_final_sentiment(user_input)
