@@ -79,7 +79,7 @@ tab1, tab2, tab3, tab4 = st.tabs(["💬 Single Text", "📂 Bulk CSV", "🤖 Aut
 with tab1:
     st.subheader("Analyze a Single Review")
     analysis_type = st.radio("Choose Analysis Type:", ["Multilingual Sentiment", "Emotion Detection (English)"])
-    user_input = st.text_area("Enter text here:", "অসাধারণ হইছে রেসেপি, লোভনীয় রেসিপি")
+    user_input = st.text_area("Enter text here:", "I Love this product!")
 
     if st.button("Analyze Text"):
         if user_input.strip() != "":
