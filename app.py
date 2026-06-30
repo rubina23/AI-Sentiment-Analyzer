@@ -28,7 +28,7 @@ st.write("---")
 # ==========================================
 @st.cache_resource
 def load_sentiment_model():
-    # অনেক ছোট এবং ফাস্ট মডেল (Streamlit-এর 1GB RAM-এর জন্য পারফেক্ট)
+    # small & fast model( perfect for Streamlit1GB RAM)
     return pipeline("text-classification", model="lxyuan/distilbert-base-multilingual-cased-sentiments-student", max_length=512, truncation=True)
     
 
@@ -50,7 +50,7 @@ def map_sentiment_label(label):
     return label.upper()
 
 def check_positive_keywords(text):
-    # বাংলা ও বাংলিশ পজিটিভ শব্দের লিস্ট
+    # Word list Bengali & Banglish 
     positive_words = ['অসাধারণ', 'লোভনীয়', 'মজার', 'দারুণ', 'সেরা', 'সুন্দর', 'ভালো', 'val', 'valo', 'darun', 'mojar', 'joss', 'best', 'awesome', 'excellent', 'love']
     text_lower = str(text).lower()
     
@@ -60,17 +60,17 @@ def check_positive_keywords(text):
     return None
 
 def get_final_sentiment(text):
-    # ১. প্রথমে কি-ওয়ার্ড দিয়ে চেক করবে
+    # 1. First check using keyword 
     keyword_result = check_positive_keywords(text)
     if keyword_result:
-        return keyword_result, 1.0  # কি-ওয়ার্ড ম্যাচ করলে কনফিডেন্স 100%
+        return keyword_result, 1.0  # if keyword match, confidence 100%
         
-    # ২. কি-ওয়ার্ড না পেলে এআই মডেল কাজ করবে
+    # 2. AI model work if keyword didn't match
     analyzer = load_sentiment_model()
     result = analyzer(text)[0]
     return map_sentiment_label(result['label']), result['score']
 
-# ৪টি ট্যাব তৈরি করা
+#  Create 4 tab 
 tab1, tab2, tab3, tab4 = st.tabs(["💬 Single Text", "📂 Bulk CSV", "🤖 Auto-Reply Generator", "▶️ Live YouTube Analysis"])
 
 # ==========================================
@@ -85,7 +85,7 @@ with tab1:
         if user_input.strip() != "":
             with st.spinner("Model is thinking..."):
                 if "Sentiment" in analysis_type:
-                    # আমাদের নতুন স্মার্ট ইঞ্জিন ব্যবহার করা হচ্ছে
+                    # use our new smart engine 
                     mapped_label, confidence = get_final_sentiment(user_input)
                     
                     if mapped_label == 'POSITIVE':
@@ -114,7 +114,7 @@ with tab2:
             with st.spinner("Analyzing bulk data..."):
                 data_to_analyze = df[text_column].dropna().astype(str).head(100).tolist()
                 
-                # স্মার্ট ইঞ্জিন দিয়ে সব ডেটা অ্যানালাইসিস
+                # all data analysis using smart engine 
                 sentiments = [get_final_sentiment(text)[0] for text in data_to_analyze]
                 
                 df_result = pd.DataFrame({"Review": data_to_analyze, "Sentiment": sentiments})
@@ -151,7 +151,7 @@ with tab3:
         if review_input.strip() != "":
             with st.spinner("Analyzing sentiment and drafting response..."):
                 
-                # স্মার্ট ইঞ্জিন ব্যবহার করা হচ্ছে
+                # usin smart engine
                 sentiment_label, _ = get_final_sentiment(review_input)
                 
                 if sentiment_label == 'POSITIVE':
@@ -184,7 +184,7 @@ with tab4:
                     if len(comments_list) > 0:
                         comment_texts = [comment['text'] for comment in comments_list]
                         
-                        # স্মার্ট ইঞ্জিন দিয়ে ইউটিউবের কমেন্ট অ্যানালাইসিস
+                        # youtube comment analysis using smart engine 
                         sentiments = [get_final_sentiment(text)[0] for text in comment_texts]
                         
                         df_yt = pd.DataFrame({"Comment": comment_texts, "Sentiment": sentiments})
