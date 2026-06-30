@@ -8,10 +8,10 @@ from youtube_comment_downloader import *
 import itertools
 
 # main settings
-st.set_page_config(page_title="AI Sentiment Analyzer", page_icon="🧠", layout="wide")
+st.set_page_config(page_title="PulseAI", page_icon="🧠", layout="wide")
 
-st.title("🧠 AI Sentiment Analyzer")
-st.write("Analyze Sentiments, Detect Emotions, Generate Auto-Replies, and Scrape Live YouTube Comments!")
+st.title("🧠 PulseAI: Multilingual Sentiment Engine")
+st.write("Real-time Customer Feedback and Emotion Detection Platform")
 st.write("---")
 
 # ==========================================
